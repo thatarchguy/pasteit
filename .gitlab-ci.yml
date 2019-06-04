@@ -1,0 +1,18 @@
+stages:
+  - test
+  - build
+
+test:
+  stage: test
+  image: golang:1.12
+  script:
+    - go test -v ./...
+
+build:
+  stage: build
+  image: golang:1.12
+  script:
+    # Compile and name the binary as `hello`
+    - go build -o app
+    # Execute the binary
+    - ./app
