@@ -40,7 +40,7 @@ func createPost(c *gin.Context) {
 	db.Save(&post)
 
 	// Return
-	c.String(http.StatusCreated, fmt.Sprintf("%v: http://%s/%s", post.ID, hostname, post.URI))
+	c.String(http.StatusCreated, fmt.Sprintf("%v: http://%s/%s", post.ID, config.server.hostname, post.URI))
 }
 
 // fetchAllPost fetch all Posts
