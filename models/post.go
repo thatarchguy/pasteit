@@ -7,8 +7,8 @@ import (
 // Post model
 type Post struct {
 	gorm.Model
-	Post string `json:"post"`
-	URI  string `gorm:"not null;unique" json:"URI"`
+	Post string `gorm:"type:text" json:"post"`
+	URI  string `gorm:"type:varchar(10);not null;unique" json:"URI"`
 }
 
 // IncrementURI to generate the URI

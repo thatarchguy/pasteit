@@ -19,8 +19,10 @@ alias pasteit='curl -F 'f=@-' localhost:8080'
 
 ## Deploying
 
+Databases supported are **Mysql** and **Postgres**
+
 Postgres:
-You will need a postgres server. I use a quick docker container for this:
+I use a quick docker container for this:
 ```
 docker run --rm -it --publish 0.0.0.0:5432:5432 --name pg -e POSTGRES_PASSWORD=postgres postgres:alpine
 ```
@@ -30,16 +32,17 @@ Run the application
 ./pasteit
 ```
 
-### Environment Variables
+### CLI & Environment Variables
 
 | Variable  | Purpose  | Default  |
 |-----------|----------|----------|
 | ADDRESS   | Address server listens on  | 0.0.0.0  |
 | PORT      | Post server listens on  | 8080  |
 | HOSTNAME  | DNS of server  | "address:port"  |
-| PG_ADDR   | Postgress Address  | 127.0.0.1  |
-| PG_PORT   | Postgres Port  | 5432  |
-| PG_USER   | Postgres User  | postgres |
-| PG_PASS   | Postgres Pass  | postgres  |
-| PG_DBNAME | Postgres Database Name  | postgres  |
-| PG_SSL    | Postgres SSL Mode | disabled  |
+| DB_ENGINE | Database Engine | postgres |
+| DB_ADDR   | Database Address  | 127.0.0.1  |
+| DB_PORT   | Database Port  | 5432  |
+| DB_USER   | Database User  | postgres |
+| DB_PASS   | Database Pass  | postgres  |
+| DB_DBNAME | Database Database Name  | postgres  |
+| DB_SSL    | Database SSL Mode | disabled  |
