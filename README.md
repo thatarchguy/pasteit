@@ -19,17 +19,19 @@ alias pasteit='curl -F 'f=@-' localhost:8080'
 
 ## Deploying
 
-Databases supported are **Mysql** and **Postgres**
+Databases supported are **Mysql**, **Postgres**, and **Sqlite3**
 
 Postgres:
 I use a quick docker container for this:
 ```
-docker run --rm -it --publish 0.0.0.0:5432:5432 --name pg -e POSTGRES_PASSWORD=postgres postgres:alpine
+$ docker run --rm -it --publish 0.0.0.0:5432:5432 --name pg -e POSTGRES_PASSWORD=postgres postgres:alpine
+
+$ ./pasteit -database postgres://postgres:postgres@localhost/postgres?sslmode=disable
 ```
 
-Run the application
+Sqlite:
 ```
-./pasteit
+$ ./pasteit -database sqlite://:memory:
 ```
 
 ### CLI & Environment Variables
@@ -39,10 +41,4 @@ Run the application
 | ADDRESS   | Address server listens on  | 0.0.0.0  |
 | PORT      | Post server listens on  | 8080  |
 | HOSTNAME  | DNS of server  | "address:port"  |
-| DB_ENGINE | Database Engine | postgres |
-| DB_ADDR   | Database Address  | 127.0.0.1  |
-| DB_PORT   | Database Port  | 5432  |
-| DB_USER   | Database User  | postgres |
-| DB_PASS   | Database Pass  | postgres  |
-| DB_DBNAME | Database Database Name  | postgres  |
-| DB_SSL    | Database SSL Mode | disabled  |
+| DATABASE  | Database Address | sqlite://:memory: |

@@ -11,29 +11,17 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/xo/dburl"
 )
 
 var db *gorm.DB
 
-type server struct {
+var config struct {
 	address  string
 	port     string
 	hostname string
-}
-
-type database struct {
-	engine  string
-	address string
-	port    string
-	user    string
-	pass    string
-	name    string
-	ssl     string
-}
-
-var config struct {
-	server   server
-	database database
+	database string
 }
 
 func main() {
@@ -45,42 +33,34 @@ func main() {
 	r.POST("/", createPost)
 	r.GET("/", fetchAllPost)
 	r.GET("/:id", fetchSinglePost)
-	log.Printf("Hostname %v", config.server.hostname)
+	log.Printf("Hostname %v", config.hostname)
 
-	r.Run(config.server.address + ":" + config.server.port)
+	r.Run(config.address + ":" + config.port)
 }
 
 func loadConfig() {
 
-	flag.StringVar(&config.server.address, "address", "0.0.0.0", "Address to listen on")
-	flag.StringVar(&config.server.port, "port", "8080", "Port to listen on")
-	flag.StringVar(&config.server.hostname, "hostname", "0.0.0.0", "Hostname of Server")
+	flag.StringVar(&config.address, "address", "0.0.0.0", "Address to listen on")
+	flag.StringVar(&config.port, "port", "8080", "Port to listen on")
+	flag.StringVar(&config.hostname, "hostname", "0.0.0.0", "Hostname of Server")
 
-	flag.StringVar(&config.database.engine, "db_engine", "postgres", "postgres or mysql")
-	flag.StringVar(&config.database.address, "db_addr", "127.0.0.1", "Address to listen on")
-	flag.StringVar(&config.database.port, "db_port", "5432", "Port to listen on")
-	flag.StringVar(&config.database.user, "db_user", "postgres", "Hostname of Server")
-	flag.StringVar(&config.database.pass, "db_pass", "postgres", "Address to listen on")
-	flag.StringVar(&config.database.name, "db_name", "postgres", "Port to listen on")
-	flag.StringVar(&config.database.ssl, "db_ssl", "disable", "Hostname of Server")
+	flag.StringVar(&config.database, "database", "sqlite://:memory:", "Database String")
 	flag.Parse()
 }
 
 func configureDatabase() {
 	//open a db connection
-	var err error
-
-	if config.database.engine == "postgres" {
-		connection := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-			config.database.address, config.database.port, config.database.user,
-			config.database.pass, config.database.name, config.database.ssl)
-		db, err = gorm.Open("postgres", connection)
+	u, err := dburl.Parse(config.database)
+	if err != nil {
+		fmt.Print(err)
+		panic("Invalid Database Schema")
 	}
-	if config.database.engine == "mysql" {
-		connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True",
-			config.database.user, config.database.pass, config.database.address,
-			config.database.port, config.database.name)
-		db, err = gorm.Open("mysql", connection)
+
+	//GORM handles sqlite in a special way
+	if u.Scheme == "sqlite3" || u.Scheme == "sqlite" {
+		db, err = gorm.Open("sqlite3", u.Opaque)
+	} else {
+		db, err = gorm.Open(u.Scheme, u.String())
 	}
 	if err != nil {
 		fmt.Print(err)
