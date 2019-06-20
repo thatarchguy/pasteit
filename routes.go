@@ -40,7 +40,7 @@ func createPost(c *gin.Context) {
 	db.Save(&post)
 
 	// Return
-	c.String(http.StatusCreated, fmt.Sprintf("%v: http://%s/%s", post.ID, config.server.hostname, post.URI))
+	c.String(http.StatusCreated, fmt.Sprintf("%v: http://%s/%s", post.ID, config.hostname, post.URI))
 }
 
 // fetchAllPost fetch all Posts
@@ -50,7 +50,7 @@ func fetchAllPost(c *gin.Context) {
 	db.Find(&post)
 
 	if len(post) <= 0 {
-		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "No post found!"})
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "No posts found!"})
 		return
 	}
 
